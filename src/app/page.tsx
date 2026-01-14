@@ -218,7 +218,7 @@ const HeroSection = memo(function HeroSection() {
               AI-POWERED RESTAURANT MANAGEMENT
             </p>
 
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.05] mb-6">
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] mb-6">
               One Platform.
               <br />
               <span className="gradient-text">Total Control.</span>
@@ -361,7 +361,7 @@ const ProblemSection = memo(function ProblemSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold text-white mb-4">
             Running a Restaurant
             <br />
             <span className="text-white/50">Shouldn&apos;t Feel Like This</span>
@@ -450,7 +450,7 @@ const SolutionSection = memo(function SolutionSection() {
             <p className="text-[#3EB489] font-semibold text-sm tracking-wider uppercase mb-4">
               The Solution
             </p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+            <h2 className="font-display text-4xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
               Meet Dacy:
               <br />
               Your AI-Powered
@@ -629,7 +629,7 @@ const FeaturesSection = memo(function FeaturesSection() {
           <p className="text-[#3EB489] font-semibold text-sm tracking-wider uppercase mb-4">
             Features
           </p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white">
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold text-white">
             Everything You Need.
             <br />
             <span className="text-white/50">Nothing You Don&apos;t.</span>
@@ -657,7 +657,7 @@ const FeaturesSection = memo(function FeaturesSection() {
                       {feature.title}
                     </p>
                   </div>
-                <h3 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+                <h3 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-4">
                   {feature.headline}
                 </h3>
                   <p className="text-white/60 text-lg mb-6 leading-relaxed">
@@ -730,7 +730,7 @@ const IntegrationsSection = memo(function IntegrationsSection() {
           <p className="text-[#3EB489] font-semibold text-sm tracking-wider uppercase mb-4">
             Integrations
           </p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold text-white mb-4">
             Connects With Everything
           </h2>
           <p className="text-white/60 text-lg max-w-2xl mx-auto">
@@ -794,7 +794,7 @@ const HowItWorksSection = memo(function HowItWorksSection() {
           <p className="text-[#3EB489] font-semibold text-sm tracking-wider uppercase mb-4">
             How It Works
           </p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white">
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold text-white">
             Get Started in 3 Steps
           </h2>
         </motion.div>
@@ -875,7 +875,7 @@ const ContactSection = memo(function ContactSection() {
           <p className="text-[#3EB489] font-semibold text-sm tracking-wider uppercase mb-4">
             Get Started
           </p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold text-white mb-4">
             Are You Interested?
           </h2>
           <p className="text-white/60 text-lg max-w-2xl mx-auto">
