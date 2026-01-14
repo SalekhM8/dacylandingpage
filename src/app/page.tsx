@@ -212,49 +212,24 @@ const HeroSection = memo(function HeroSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Text Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center lg:text-left"
-          >
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-[#3EB489] font-semibold text-sm tracking-[0.2em] uppercase mb-6"
-            >
+          {/* Text Content - No animation for instant load */}
+          <div className="text-center lg:text-left">
+            <p className="text-[#3EB489] font-semibold text-sm tracking-[0.2em] uppercase mb-6">
               AI-POWERED RESTAURANT MANAGEMENT
-            </motion.p>
+            </p>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] mb-6 tracking-tight"
-            >
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] mb-6 tracking-tight">
               ONE PLATFORM.
               <br />
               <span className="gradient-text">TOTAL CONTROL.</span>
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-white/70 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0"
-            >
+            <p className="text-white/70 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0">
               Automatically track inventory, manage waste, and connect every POS 
               and delivery platform — all in one intelligent dashboard.
-            </motion.p>
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-            >
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <a
                 href="#contact"
                 className="inline-flex items-center justify-center gap-2 bg-[#3EB489] hover:bg-[#2D8A69] text-white font-bold px-8 py-4 rounded-full text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#3EB489]/30"
@@ -269,16 +244,11 @@ const HeroSection = memo(function HeroSection() {
                 <Play className="w-5 h-5" />
                 <span>See How It Works</span>
               </a>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          {/* Dashboard Mockup - slide in from right */}
-          <motion.div
-            initial={{ opacity: 0, x: 60 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative hidden lg:block"
-          >
+          {/* Dashboard Mockup - static for instant load */}
+          <div className="relative hidden lg:block">
             <div className="relative">
               <div className="glass-light rounded-2xl p-6 shadow-2xl shadow-black/30 relative overflow-hidden">
                 <div 
@@ -316,25 +286,18 @@ const HeroSection = memo(function HeroSection() {
 
                   <div className="bg-white/5 rounded-xl p-4 h-32 flex items-end gap-2">
                     {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
-                      <motion.div
+                      <div
                         key={i}
-                        initial={{ height: 0 }}
-                        animate={{ height: `${h}%` }}
-                        transition={{ duration: 0.5, delay: 0.8 + i * 0.05 }}
                         className="flex-1 bg-gradient-to-t from-[#3EB489] to-[#3EB489]/50 rounded-t"
+                        style={{ height: `${h}%` }}
                       />
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Floating Cards */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.9 }}
-                className="absolute -bottom-8 -left-8 glass-light rounded-xl p-4 shadow-xl"
-              >
+              {/* Floating Cards - static */}
+              <div className="absolute -bottom-8 -left-8 glass-light rounded-xl p-4 shadow-xl">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-[#3EB489]/20 rounded-full flex items-center justify-center">
                     <Check className="w-5 h-5 text-[#3EB489]" />
@@ -344,14 +307,9 @@ const HeroSection = memo(function HeroSection() {
                     <p className="text-white/50 text-xs">Auto-synced just now</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div 
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.1 }}
-                className="absolute -top-4 -right-4 glass-light rounded-xl p-4 shadow-xl"
-              >
+              <div className="absolute -top-4 -right-4 glass-light rounded-xl p-4 shadow-xl">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-[#F59E0B]/20 rounded-full flex items-center justify-center">
                     <Sparkles className="w-5 h-5 text-[#F59E0B]" />
@@ -361,29 +319,11 @@ const HeroSection = memo(function HeroSection() {
                     <p className="text-white/50 text-xs">Reduce chicken order by 15%</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Trust Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="mt-20 text-center"
-        >
-          <p className="text-white/40 text-sm uppercase tracking-wider mb-6">
-            Integrates with all major POS and delivery platforms
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 opacity-50">
-            {["Square", "Toast", "Clover", "UberEats", "Deliveroo", "JustEat"].map((name) => (
-              <span key={name} className="text-white/60 font-display font-semibold text-lg">
-                {name}
-              </span>
-            ))}
-          </div>
-        </motion.div>
       </div>
     </section>
   );
@@ -965,17 +905,6 @@ const ContactSection = memo(function ContactSection() {
           />
         </motion.div>
 
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8 text-center"
-        >
-          <p className="text-white/40 text-sm flex items-center justify-center gap-2">
-            <span>🔒</span>
-            <span>Your information is secure and will never be shared.</span>
-          </p>
-        </motion.div>
       </div>
     </section>
   );
