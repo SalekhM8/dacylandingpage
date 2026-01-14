@@ -965,12 +965,14 @@ function Footer() {
 
 // Main Page Component
 export default function Home() {
-  // Scroll to top on page load/refresh
+  // Scroll to top only on actual page refresh (not anchor navigation)
   useEffect(() => {
-    window.scrollTo(0, 0);
-    // Also handle hash in URL
-    if (window.location.hash) {
-      window.history.replaceState(null, '', window.location.pathname);
+    // Check if this is a fresh page load (not anchor click)
+    const isRefresh = performance.navigation?.type === 1 || 
+      (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type === 'reload';
+    
+    if (isRefresh || !window.location.hash) {
+      window.scrollTo(0, 0);
     }
   }, []);
 
