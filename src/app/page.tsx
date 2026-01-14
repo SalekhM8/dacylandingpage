@@ -1003,10 +1003,22 @@ const Footer = memo(function Footer() {
 // Main Page Component
 export default function Home() {
   useEffect(() => {
-    // Always scroll to top on page load/reload
-    window.scrollTo(0, 0);
+    // Disable browser's scroll restoration (important for mobile)
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
     
-    // Clear any hash from URL to prevent scroll jump
+    // Force scroll to top immediately
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    
+    // Also scroll after a tiny delay (catches mobile browsers)
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+    
+    // Clear any hash from URL
     if (window.location.hash) {
       history.replaceState(null, '', window.location.pathname);
     }
