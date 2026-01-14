@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
+import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import {
   Menu,
@@ -27,20 +27,55 @@ import {
   Users,
 } from "lucide-react";
 
-// Simple animation variants
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
+// Counting animation hook - smooth and performant
+function useCountUp(end: number, duration: number = 2000) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const hasStarted = useRef(false);
 
-// Navbar Component
-function Navbar() {
+  useEffect(() => {
+    if (!isInView || hasStarted.current) return;
+    hasStarted.current = true;
+
+    let startTime: number;
+    let animationFrame: number;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(easeOut * end));
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration, isInView]);
+
+  return { count, ref };
+}
+
+// Memoized Navbar Component
+const Navbar = memo(function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 50);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -50,25 +85,23 @@ function Navbar() {
     { label: "How It Works", href: "#how-it-works" },
   ];
 
+  const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "glass shadow-2xl shadow-black/20"
-            : "bg-transparent"
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? "glass shadow-2xl shadow-black/20" : "bg-transparent"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            {/* Logo */}
             <a href="#" className="flex items-center">
               <span className="font-display text-2xl font-bold text-white tracking-tight">
                 dacy.ai
               </span>
             </a>
 
-            {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
                 <a
@@ -81,7 +114,6 @@ function Navbar() {
               ))}
             </div>
 
-            {/* CTA Button */}
             <div className="hidden md:block">
               <a
                 href="#contact"
@@ -92,10 +124,10 @@ function Navbar() {
               </a>
             </div>
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden text-white p-2"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -103,94 +135,72 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: mobileMenuOpen ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden ${
-          mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"
+      {/* Mobile Menu - CSS transitions for performance */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden transition-opacity duration-300 ${
+          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
-        onClick={() => setMobileMenuOpen(false)}
+        onClick={closeMobileMenu}
       />
 
-      {/* Mobile Menu Card */}
-      <motion.div
-        initial={{ opacity: 0, y: -20, scale: 0.95 }}
-        animate={{ 
-          opacity: mobileMenuOpen ? 1 : 0, 
-          y: mobileMenuOpen ? 0 : -20,
-          scale: mobileMenuOpen ? 1 : 0.95
-        }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className={`fixed top-24 left-4 right-4 z-50 md:hidden ${
-          mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"
+      <div
+        className={`fixed top-24 left-4 right-4 z-50 md:hidden transition-all duration-300 ${
+          mobileMenuOpen 
+            ? "opacity-100 translate-y-0 pointer-events-auto" 
+            : "opacity-0 -translate-y-4 pointer-events-none"
         }`}
       >
-        <div className="bg-[#1A2634]/90 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl shadow-black/50">
-          {/* Close button */}
+        <div className="bg-[#1A2634]/95 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl shadow-black/50">
           <button
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={closeMobileMenu}
             className="absolute top-4 right-4 w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center transition-colors"
+            aria-label="Close menu"
           >
             <X className="w-5 h-5 text-white/70" />
           </button>
 
-          {/* Logo */}
           <div className="text-center mb-6 pt-2">
             <span className="font-display text-xl font-bold text-white">dacy.ai</span>
           </div>
 
-          {/* Divider */}
           <div className="h-px bg-white/10 mb-6" />
 
-          {/* Nav Links */}
           <div className="space-y-2">
-            {navLinks.map((link, index) => (
-              <motion.a
+            {navLinks.map((link) => (
+              <a
                 key={link.label}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: mobileMenuOpen ? 1 : 0, x: mobileMenuOpen ? 0 : -20 }}
-                transition={{ delay: index * 0.1, duration: 0.3 }}
+                onClick={closeMobileMenu}
                 className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors group"
               >
                 <span className="text-white font-display font-semibold text-lg">{link.label}</span>
                 <ChevronRight className="w-5 h-5 text-white/40 group-hover:text-[#3EB489] transition-colors" />
-              </motion.a>
+              </a>
             ))}
           </div>
 
-          {/* CTA Button */}
-          <motion.a
+          <a
             href="#contact"
-            onClick={() => setMobileMenuOpen(false)}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: mobileMenuOpen ? 1 : 0, y: mobileMenuOpen ? 0 : 10 }}
-            transition={{ delay: 0.3, duration: 0.3 }}
+            onClick={closeMobileMenu}
             className="flex items-center justify-center gap-2 w-full bg-[#3EB489] hover:bg-[#2D8A69] text-white font-bold py-4 px-6 rounded-2xl mt-6 transition-all"
           >
             <span>Are You Interested?</span>
             <ArrowRight className="w-5 h-5" />
-          </motion.a>
+          </a>
         </div>
-      </motion.div>
+      </div>
     </>
   );
-}
+});
 
 // Hero Section
-function HeroSection() {
+const HeroSection = memo(function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        {/* Gradient Orbs */}
+      {/* Static Background Elements */}
+      <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#3EB489]/20 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#3EB489]/10 rounded-full blur-[100px]" />
-        
-        {/* Grid Pattern */}
         <div 
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -204,26 +214,24 @@ function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Text Content */}
           <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              visible: { transition: { staggerChildren: 0.1 } }
-            }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
             className="text-center lg:text-left"
           >
-            {/* Pre-headline */}
             <motion.p
-              variants={fadeIn}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
               className="text-[#3EB489] font-semibold text-sm tracking-[0.2em] uppercase mb-6"
             >
               AI-POWERED RESTAURANT MANAGEMENT
             </motion.p>
 
-            {/* Main Headline */}
             <motion.h1
-              variants={fadeIn}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
               className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] mb-6 tracking-tight"
             >
               ONE PLATFORM.
@@ -231,20 +239,20 @@ function HeroSection() {
               <span className="gradient-text">TOTAL CONTROL.</span>
             </motion.h1>
 
-            {/* Subheadline */}
             <motion.p
-              variants={fadeIn}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
               className="text-white/70 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0"
             >
               Automatically track inventory, manage waste, and connect every POS 
               and delivery platform — all in one intelligent dashboard.
             </motion.p>
 
-            {/* CTAs */}
             <motion.div
-              variants={fadeIn}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               <a
@@ -264,17 +272,15 @@ function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* Dashboard Mockup */}
+          {/* Dashboard Mockup - slide in from right */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 60 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="relative hidden lg:block"
           >
             <div className="relative">
-              {/* Main Dashboard Card with background image */}
               <div className="glass-light rounded-2xl p-6 shadow-2xl shadow-black/30 relative overflow-hidden">
-                {/* Background image overlay */}
                 <div 
                   className="absolute inset-0 opacity-10 rounded-2xl"
                   style={{
@@ -294,7 +300,6 @@ function HeroSection() {
                     </div>
                   </div>
                   
-                  {/* Mock Stats */}
                   <div className="grid grid-cols-3 gap-4 mb-6">
                     {[
                       { label: "Revenue", value: "£4,280", change: "+12%" },
@@ -309,13 +314,14 @@ function HeroSection() {
                     ))}
                   </div>
 
-                  {/* Mock Chart */}
                   <div className="bg-white/5 rounded-xl p-4 h-32 flex items-end gap-2">
                     {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
-                      <div
+                      <motion.div
                         key={i}
+                        initial={{ height: 0 }}
+                        animate={{ height: `${h}%` }}
+                        transition={{ duration: 0.5, delay: 0.8 + i * 0.05 }}
                         className="flex-1 bg-gradient-to-t from-[#3EB489] to-[#3EB489]/50 rounded-t"
-                        style={{ height: `${h}%` }}
                       />
                     ))}
                   </div>
@@ -323,7 +329,12 @@ function HeroSection() {
               </div>
 
               {/* Floating Cards */}
-              <div className="absolute -bottom-8 -left-8 glass-light rounded-xl p-4 shadow-xl">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.9 }}
+                className="absolute -bottom-8 -left-8 glass-light rounded-xl p-4 shadow-xl"
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-[#3EB489]/20 rounded-full flex items-center justify-center">
                     <Check className="w-5 h-5 text-[#3EB489]" />
@@ -333,9 +344,14 @@ function HeroSection() {
                     <p className="text-white/50 text-xs">Auto-synced just now</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="absolute -top-4 -right-4 glass-light rounded-xl p-4 shadow-xl">
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 1.1 }}
+                className="absolute -top-4 -right-4 glass-light rounded-xl p-4 shadow-xl"
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-[#F59E0B]/20 rounded-full flex items-center justify-center">
                     <Sparkles className="w-5 h-5 text-[#F59E0B]" />
@@ -345,7 +361,7 @@ function HeroSection() {
                     <p className="text-white/50 text-xs">Reduce chicken order by 15%</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>
@@ -354,7 +370,7 @@ function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
           className="mt-20 text-center"
         >
           <p className="text-white/40 text-sm uppercase tracking-wider mb-6">
@@ -371,10 +387,13 @@ function HeroSection() {
       </div>
     </section>
   );
-}
+});
 
 // Problem Section
-function ProblemSection() {
+const ProblemSection = memo(function ProblemSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   const problems = [
     {
       icon: ClipboardList,
@@ -394,23 +413,30 @@ function ProblemSection() {
   ];
 
   return (
-    <section className="py-24 relative">
+    <section ref={ref} className="py-24 relative">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
           <h2 className="font-display text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
             Running a Restaurant
             <br />
             <span className="text-white/50">Shouldn&apos;t Feel Like This</span>
           </h2>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {problems.map((problem, index) => (
-            <div
+            <motion.div
               key={index}
+              initial={{ opacity: 0, y: 40 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: index * 0.15 }}
               className="glass-light rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 group relative overflow-hidden"
             >
-              {/* Background image overlay */}
               <div 
                 className="absolute inset-0 opacity-5 rounded-2xl"
                 style={{
@@ -420,7 +446,7 @@ function ProblemSection() {
                 }}
               />
               <div className="relative z-10">
-                <div className="w-14 h-14 bg-red-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 bg-red-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <problem.icon className="w-7 h-7 text-red-400" />
                 </div>
                 <h3 className="font-display font-bold text-lg text-white mb-3 tracking-wide">
@@ -430,20 +456,28 @@ function ProblemSection() {
                   {problem.description}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        <p className="text-center mt-12 text-white/50 text-lg">
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="text-center mt-12 text-white/50 text-lg"
+        >
           Sound familiar? <span className="text-[#3EB489] font-semibold">There&apos;s a better way.</span>
-        </p>
+        </motion.p>
       </div>
     </section>
   );
-}
+});
 
 // Solution Section
-function SolutionSection() {
+const SolutionSection = memo(function SolutionSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   const features = [
     "Auto-depletes inventory with every sale",
     "Tracks waste by reason with one tap",
@@ -462,14 +496,17 @@ function SolutionSection() {
   ];
 
   return (
-    <section className="py-24 relative">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3EB489]/5 to-transparent" />
+    <section ref={ref} className="py-24 relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3EB489]/5 to-transparent pointer-events-none" />
       
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Text Content */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6 }}
+          >
             <p className="text-[#3EB489] font-semibold text-sm tracking-[0.2em] uppercase mb-4">
               THE SOLUTION
             </p>
@@ -487,23 +524,30 @@ function SolutionSection() {
 
             <ul className="space-y-4">
               {features.map((feature, index) => (
-                <li
+                <motion.li
                   key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
                   className="flex items-center gap-3"
                 >
                   <div className="w-6 h-6 bg-[#3EB489]/20 rounded-full flex items-center justify-center flex-shrink-0">
                     <Check className="w-4 h-4 text-[#3EB489]" />
                   </div>
                   <span className="text-white/80">{feature}</span>
-                </li>
+                </motion.li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Visual */}
-          <div className="relative">
+          <motion.div 
+            initial={{ opacity: 0, x: 40 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="relative"
+          >
             <div className="glass-light rounded-3xl p-8 relative overflow-hidden">
-              {/* Background image overlay */}
               <div 
                 className="absolute inset-0 opacity-10 rounded-3xl"
                 style={{
@@ -513,65 +557,78 @@ function SolutionSection() {
                 }}
               />
               <div className="relative z-10">
-                {/* Central Hub - Logo */}
                 <div className="flex items-center justify-center mb-8">
-                  <div className="w-28 h-28 rounded-2xl overflow-hidden shadow-lg shadow-[#3EB489]/30">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="w-28 h-28 rounded-2xl overflow-hidden shadow-lg shadow-[#3EB489]/30"
+                  >
                     <Image 
                       src="/images/dacylogo.jpg" 
                       alt="Dacy.ai" 
                       width={112} 
                       height={112}
                       className="w-full h-full object-cover"
+                      priority
                     />
-                  </div>
+                  </motion.div>
                 </div>
 
-                {/* Connected Platforms */}
                 <div className="grid grid-cols-3 gap-4">
                   {platforms.map((item, i) => (
-                    <div
+                    <motion.div
                       key={i}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                      transition={{ duration: 0.4, delay: 0.5 + i * 0.08 }}
                       className="bg-white/5 rounded-xl p-4 text-center hover:bg-white/10 transition-colors"
                     >
                       <div className="w-12 h-12 bg-[#3EB489]/10 rounded-xl mx-auto mb-3 flex items-center justify-center">
                         <item.icon className="w-6 h-6 text-[#3EB489]" />
                       </div>
                       <p className="text-white/70 text-sm font-medium">{item.name}</p>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
   );
-}
+});
 
-// Stats Section
-function StatsSection() {
+// Stats Section with counting animation
+const StatsSection = memo(function StatsSection() {
   const stats = [
-    { value: "20%", label: "Reduction in Operating Costs" },
-    { value: "50%", label: "Profit Margin Improvement" },
-    { value: "100+", label: "Hours Saved Per Month" },
-    { value: "95%", label: "Inventory Accuracy" },
+    { value: 20, suffix: "%", label: "Reduction in Operating Costs" },
+    { value: 50, suffix: "%", label: "Profit Margin Improvement" },
+    { value: 100, suffix: "+", label: "Hours Saved Per Month" },
+    { value: 95, suffix: "%", label: "Inventory Accuracy" },
   ];
 
   return (
     <section className="py-24 relative bg-[#0F171F]">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="font-display text-5xl md:text-6xl font-extrabold mb-2">
-                <span className="gradient-text">{stat.value}</span>
+          {stats.map((stat, index) => {
+            const { count, ref } = useCountUp(stat.value, 2000);
+            
+            return (
+              <div key={index} ref={ref} className="text-center">
+                <div className="font-display text-5xl md:text-6xl font-extrabold mb-2">
+                  <span className="gradient-text">
+                    {count}{stat.suffix}
+                  </span>
+                </div>
+                <p className="text-white/50 text-sm md:text-base">
+                  {stat.label}
+                </p>
               </div>
-              <p className="text-white/50 text-sm md:text-base">
-                {stat.label}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
         
         <p className="text-center mt-8 text-white/30 text-sm">
@@ -580,10 +637,10 @@ function StatsSection() {
       </div>
     </section>
   );
-}
+});
 
 // Features Section
-function FeaturesSection() {
+const FeaturesSection = memo(function FeaturesSection() {
   const features = [
     {
       icon: BarChart3,
@@ -622,7 +679,13 @@ function FeaturesSection() {
   return (
     <section id="features" className="py-24 relative">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
           <p className="text-[#3EB489] font-semibold text-sm tracking-[0.2em] uppercase mb-4">
             FEATURES
           </p>
@@ -631,85 +694,99 @@ function FeaturesSection() {
             <br />
             <span className="text-white/50">Nothing You Don&apos;t.</span>
           </h2>
-        </div>
+        </motion.div>
 
         <div className="space-y-24">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className={`grid lg:grid-cols-2 gap-12 items-center ${
-                index % 2 === 1 ? "lg:flex-row-reverse" : ""
-              }`}
-            >
-              {/* Text Side */}
-              <div className={index % 2 === 1 ? "lg:order-2" : ""}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-[#3EB489]/10 rounded-xl flex items-center justify-center">
-                    <feature.icon className="w-6 h-6 text-[#3EB489]" />
+          {features.map((feature, index) => {
+            const isEven = index % 2 === 0;
+            return (
+              <div key={index} className="grid lg:grid-cols-2 gap-12 items-center">
+                {/* Text Side */}
+                <motion.div 
+                  initial={{ opacity: 0, x: isEven ? -40 : 40 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6 }}
+                  className={isEven ? "" : "lg:order-2"}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-[#3EB489]/10 rounded-xl flex items-center justify-center">
+                      <feature.icon className="w-6 h-6 text-[#3EB489]" />
+                    </div>
+                    <p className="text-[#3EB489] font-semibold text-xs tracking-[0.15em]">
+                      {feature.title}
+                    </p>
                   </div>
-                  <p className="text-[#3EB489] font-semibold text-xs tracking-[0.15em]">
-                    {feature.title}
+                  <h3 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight">
+                    {feature.headline}
+                  </h3>
+                  <p className="text-white/60 text-lg mb-6 leading-relaxed">
+                    {feature.description}
                   </p>
-                </div>
-                <h3 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight">
-                  {feature.headline}
-                </h3>
-                <p className="text-white/60 text-lg mb-6 leading-relaxed">
-                  {feature.description}
-                </p>
-                <ul className="grid grid-cols-2 gap-3">
-                  {feature.points.map((point, i) => (
-                    <li key={i} className="flex items-center gap-2 text-white/70 text-sm">
-                      <Check className="w-4 h-4 text-[#3EB489] flex-shrink-0" />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                  <ul className="grid grid-cols-2 gap-3">
+                    {feature.points.map((point, i) => (
+                      <li key={i} className="flex items-center gap-2 text-white/70 text-sm">
+                        <Check className="w-4 h-4 text-[#3EB489] flex-shrink-0" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
 
-              {/* Visual Side */}
-              <div className={index % 2 === 1 ? "lg:order-1" : ""}>
-                <div className="glass-light rounded-2xl p-1 relative overflow-hidden">
-                  {/* Background image */}
-                  <div 
-                    className="aspect-video rounded-xl overflow-hidden relative"
-                    style={{
-                      backgroundImage: `url('${feature.image}')`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center"
-                    }}
-                  >
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1A2634] via-[#1A2634]/60 to-transparent" />
-                    
-                    {/* Icon centered */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-20 h-20 bg-[#1A2634]/80 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                        <feature.icon className="w-10 h-10 text-[#3EB489]" />
+                {/* Visual Side */}
+                <motion.div 
+                  initial={{ opacity: 0, x: isEven ? 40 : -40 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6 }}
+                  className={isEven ? "" : "lg:order-1"}
+                >
+                  <div className="glass-light rounded-2xl p-1 relative overflow-hidden">
+                    <div 
+                      className="aspect-video rounded-xl overflow-hidden relative"
+                      style={{
+                        backgroundImage: `url('${feature.image}')`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center"
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1A2634] via-[#1A2634]/60 to-transparent" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-20 h-20 bg-[#1A2634]/80 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                          <feature.icon className="w-10 h-10 text-[#3EB489]" />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
   );
-}
+});
 
 // Integrations Section
-function IntegrationsSection() {
+const IntegrationsSection = memo(function IntegrationsSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   const integrations = [
     "Square", "Toast", "Clover", "Lightspeed", "Epos Now", "Syrve",
     "UberEats", "Deliveroo", "JustEat",
   ];
 
   return (
-    <section id="integrations" className="py-24 relative overflow-hidden">
+    <section id="integrations" ref={ref} className="py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
           <p className="text-[#3EB489] font-semibold text-sm tracking-[0.2em] uppercase mb-4">
             INTEGRATIONS
           </p>
@@ -720,28 +797,33 @@ function IntegrationsSection() {
             We integrate with all major POS systems and delivery platforms. 
             Set up once, sync forever.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Logo Grid */}
         <div className="flex flex-wrap justify-center gap-4">
           {integrations.map((name, index) => (
-            <div
+            <motion.div
               key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
               className="glass-light rounded-xl px-8 py-6 hover:bg-white/10 transition-colors"
             >
               <span className="font-display font-semibold text-white/60 text-lg whitespace-nowrap">
                 {name}
               </span>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
     </section>
   );
-}
+});
 
 // How It Works Section
-function HowItWorksSection() {
+const HowItWorksSection = memo(function HowItWorksSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   const steps = [
     {
       number: "01",
@@ -761,27 +843,36 @@ function HowItWorksSection() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 relative bg-[#0F171F]">
+    <section id="how-it-works" ref={ref} className="py-24 relative bg-[#0F171F]">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
           <p className="text-[#3EB489] font-semibold text-sm tracking-[0.2em] uppercase mb-4">
             HOW IT WORKS
           </p>
           <h2 className="font-display text-4xl md:text-5xl font-extrabold text-white tracking-tight">
             Get Started in 3 Steps
           </h2>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {steps.map((step, index) => (
-            <div key={index} className="relative">
-              {/* Connector Line */}
+            <motion.div 
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: index * 0.15 }}
+              className="relative"
+            >
               {index < 2 && (
                 <div className="hidden md:block absolute top-12 left-full w-full h-[2px] bg-gradient-to-r from-[#3EB489]/50 to-transparent z-0" />
               )}
               
               <div className="glass-light rounded-2xl p-8 relative z-10 h-full overflow-hidden">
-                {/* Background image overlay */}
                 <div 
                   className="absolute inset-0 opacity-5 rounded-2xl"
                   style={{
@@ -802,11 +893,16 @@ function HowItWorksSection() {
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="text-center mt-12"
+        >
           <a
             href="#contact"
             className="inline-flex items-center gap-2 bg-[#3EB489] hover:bg-[#2D8A69] text-white font-bold px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#3EB489]/30"
@@ -814,21 +910,28 @@ function HowItWorksSection() {
             <span>Get Started Now</span>
             <ArrowRight className="w-5 h-5" />
           </a>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
-}
+});
 
 // Contact Form Section
-function ContactSection() {
+const ContactSection = memo(function ContactSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   return (
-    <section id="contact" className="py-24 relative">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3EB489]/5 to-[#3EB489]/10" />
+    <section id="contact" ref={ref} className="py-24 relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3EB489]/5 to-[#3EB489]/10 pointer-events-none" />
       
       <div className="relative max-w-xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
           <p className="text-[#3EB489] font-semibold text-sm tracking-[0.2em] uppercase mb-4">
             GET STARTED
           </p>
@@ -839,11 +942,14 @@ function ContactSection() {
             Fill out the form below and we&apos;ll get back to you within 24 hours
             to discuss how Dacy can transform your operations.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Form Container with shadow and better styling */}
-        <div className="bg-white rounded-2xl shadow-2xl shadow-black/20 overflow-hidden">
-          {/* Go High Level Form Embed */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="bg-white rounded-2xl shadow-2xl shadow-black/20 overflow-hidden"
+        >
           <iframe
             src="https://link.surimarketing.co.uk/widget/form/qrjQIA2rB7ZvFVY1ERBj"
             style={{ width: '100%', height: '550px', border: 'none' }}
@@ -855,27 +961,32 @@ function ContactSection() {
             data-form-name="Dacy Contact Form"
             data-form-id="qrjQIA2rB7ZvFVY1ERBj"
             title="Contact Form"
+            loading="lazy"
           />
-        </div>
+        </motion.div>
 
-        <div className="mt-8 text-center">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-8 text-center"
+        >
           <p className="text-white/40 text-sm flex items-center justify-center gap-2">
             <span>🔒</span>
             <span>Your information is secure and will never be shared.</span>
           </p>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
-}
+});
 
 // Footer
-function Footer() {
+const Footer = memo(function Footer() {
   return (
     <footer className="py-16 bg-[#0F171F] border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-12 mb-12">
-          {/* Brand */}
           <div className="md:col-span-2">
             <Image
               src="/images/dacylogo.jpg" 
@@ -899,7 +1010,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h4 className="font-display font-semibold text-white mb-4 text-sm tracking-[0.15em] uppercase">
               PRODUCT
@@ -918,7 +1028,6 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
             <h4 className="font-display font-semibold text-white mb-4 text-sm tracking-[0.15em] uppercase">
               GET IN TOUCH
@@ -944,7 +1053,6 @@ function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-white/30 text-sm">
             © {new Date().getFullYear()} Dacy.ai. All rights reserved.
@@ -961,17 +1069,12 @@ function Footer() {
       </div>
     </footer>
   );
-}
+});
 
 // Main Page Component
 export default function Home() {
-  // Scroll to top only on actual page refresh (not anchor navigation)
   useEffect(() => {
-    // Check if this is a fresh page load (not anchor click)
-    const isRefresh = performance.navigation?.type === 1 || 
-      (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type === 'reload';
-    
-    if (isRefresh || !window.location.hash) {
+    if (!window.location.hash) {
       window.scrollTo(0, 0);
     }
   }, []);
@@ -988,6 +1091,6 @@ export default function Home() {
       <HowItWorksSection />
       <ContactSection />
       <Footer />
-      </main>
+    </main>
   );
 }
