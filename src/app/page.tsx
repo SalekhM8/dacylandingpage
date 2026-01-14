@@ -1003,8 +1003,12 @@ const Footer = memo(function Footer() {
 // Main Page Component
 export default function Home() {
   useEffect(() => {
-    if (!window.location.hash) {
-      window.scrollTo(0, 0);
+    // Always scroll to top on page load/reload
+    window.scrollTo(0, 0);
+    
+    // Clear any hash from URL to prevent scroll jump
+    if (window.location.hash) {
+      history.replaceState(null, '', window.location.pathname);
     }
   }, []);
 
