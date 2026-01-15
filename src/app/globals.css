@@ -141,41 +141,47 @@ body {
 
 /* 3D Button Effect */
 .btn-3d {
-  background: var(--teal);
+  background: linear-gradient(180deg, #4AC99A 0%, #3EB489 50%, #2D8A69 100%);
   color: white;
   border: none;
+  border-bottom: 4px solid #1F6B4F;
   box-shadow: 
-    0 4px 0 #2D8A69,
-    0 6px 12px rgba(0, 0, 0, 0.3);
+    0 6px 20px rgba(62, 180, 137, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transform: translateY(0);
-  transition: all 0.15s ease;
+  transition: all 0.1s ease;
 }
 
 .btn-3d:hover {
   transform: translateY(2px);
+  border-bottom-width: 2px;
   box-shadow: 
-    0 2px 0 #2D8A69,
-    0 4px 8px rgba(0, 0, 0, 0.3);
+    0 4px 15px rgba(62, 180, 137, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .btn-3d:active {
   transform: translateY(4px);
+  border-bottom-width: 0px;
   box-shadow: 
-    0 0px 0 #2D8A69,
-    0 2px 4px rgba(0, 0, 0, 0.3);
+    0 2px 10px rgba(62, 180, 137, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .btn-3d-outline {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.15s ease;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 4px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.1s ease;
 }
 
 .btn-3d-outline:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 
 .font-body {
