@@ -226,11 +226,11 @@ const HeroSection = memo(function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-start">
           {/* Left Column - Text Content */}
           <div>
-            <h1 className="font-display text-[3.5rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[6rem] text-[#3EB489] leading-[0.9] mb-6 tracking-[-0.05em]" style={{ fontWeight: 900 }}>
+            <h1 className="font-display text-[2.8rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[72px] text-[#3EB489] leading-[1] mb-6 tracking-[-0.02em]" style={{ fontWeight: 700 }}>
               Your restaurant&apos;s
               <br />
               unfair advantage.
-            </h1>
+          </h1>
 
             <p className="text-white/60 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
               Streamline operations. Boost margins. Cut waste. The AI-powered platform that puts you in complete control of your business.
