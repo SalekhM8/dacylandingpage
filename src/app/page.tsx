@@ -114,6 +114,7 @@ const Navbar = memo(function Navbar() {
               ))}
             </div>
 
+            {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-4">
               <a
                 href="#features"
@@ -129,13 +130,22 @@ const Navbar = memo(function Navbar() {
               </a>
             </div>
 
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden text-white p-2"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            {/* Mobile: Book a chat + hamburger */}
+            <div className="flex md:hidden items-center gap-3">
+              <a
+                href="#contact"
+                className="btn-3d inline-flex items-center gap-2 font-semibold px-4 py-2 rounded-lg text-sm"
+              >
+                <span>Book a chat</span>
+              </a>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-white p-2"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
       </nav>
