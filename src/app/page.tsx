@@ -117,10 +117,9 @@ const Navbar = memo(function Navbar() {
             <div className="hidden md:block">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 bg-[#3EB489] hover:bg-[#2D8A69] text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-[#3EB489]/30"
+                className="btn-3d inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg"
               >
-                <span>Are You Interested?</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Get started</span>
               </a>
             </div>
 
@@ -182,10 +181,9 @@ const Navbar = memo(function Navbar() {
           <a
             href="#contact"
             onClick={closeMobileMenu}
-            className="flex items-center justify-center gap-2 w-full bg-[#3EB489] hover:bg-[#2D8A69] text-white font-bold py-4 px-6 rounded-2xl mt-6 transition-all"
+            className="btn-3d flex items-center justify-center gap-2 w-full font-bold py-4 px-6 rounded-xl mt-6"
           >
-            <span>Are You Interested?</span>
-            <ArrowRight className="w-5 h-5" />
+            <span>Get started</span>
           </a>
         </div>
       </div>
@@ -196,138 +194,131 @@ const Navbar = memo(function Navbar() {
 // Hero Section
 const HeroSection = memo(function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Static Background Elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#3EB489]/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#3EB489]/10 rounded-full blur-[100px]" />
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px"
-          }}
-        />
-      </div>
+    <section className="relative min-h-screen overflow-hidden pt-20 bg-[#1A2634]">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-8 lg:pt-16">
+        {/* Social Proof Badge */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
+            <span className="text-[#3EB489] text-sm font-semibold">★</span>
+            <span className="text-white/80 text-sm font-medium">Top AI Restaurant Platform</span>
+          </div>
+          <div className="hidden sm:flex items-center gap-1 bg-[#3EB489]/10 border border-[#3EB489]/30 rounded-full px-3 py-2">
+            <span className="text-[#3EB489] font-bold text-sm">4.9</span>
+          </div>
+        </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Text Content - No animation for instant load */}
-          <div className="text-center lg:text-left">
-            <p className="text-[#3EB489] font-semibold text-sm tracking-[0.2em] uppercase mb-6">
-              AI-POWERED RESTAURANT MANAGEMENT
-            </p>
-
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] mb-6">
-              One Platform.
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-start">
+          {/* Left Column - Text Content */}
+          <div>
+            <h1 className="font-display text-[3.2rem] sm:text-[4rem] md:text-[4.5rem] lg:text-[5rem] font-black text-white leading-[0.95] mb-6 tracking-[-0.04em]">
+              Your restaurant&apos;s
               <br />
-              <span className="gradient-text">Total Control.</span>
-          </h1>
+              <span className="text-[#3EB489]">unfair advantage.</span>
+            </h1>
 
-            <p className="text-white/70 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0">
-              Automatically track inventory, manage waste, and connect every POS 
-              and delivery platform — all in one intelligent dashboard.
+            <p className="text-white/60 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
+              Streamline operations. Boost margins. Cut waste. The AI-powered platform that puts you in complete control of your business.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            {/* CTA Buttons - Rectangular with 3D effect */}
+            <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="#contact"
-                className="inline-flex items-center justify-center gap-2 bg-[#3EB489] hover:bg-[#2D8A69] text-white font-bold px-8 py-4 rounded-full text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#3EB489]/30"
+                className="btn-3d inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-xl text-lg"
               >
-                <span>Get Started</span>
-                <ChevronRight className="w-5 h-5" />
+                <span>Get started</span>
               </a>
               <a
                 href="#features"
-                className="inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/20 text-white font-semibold px-8 py-4 rounded-full text-lg transition-all duration-300 hover:border-white/40"
+                className="btn-3d-outline inline-flex items-center justify-center gap-2 font-semibold px-8 py-4 rounded-xl text-lg"
               >
                 <Play className="w-5 h-5" />
-                <span>See How It Works</span>
+                <span>Watch demo</span>
               </a>
             </div>
           </div>
 
-          {/* Dashboard Mockup - static for instant load */}
-          <div className="relative hidden lg:block">
-            <div className="relative">
-              <div className="glass-light rounded-2xl p-6 shadow-2xl shadow-black/30 relative overflow-hidden">
-                <div 
-                  className="absolute inset-0 opacity-10 rounded-2xl"
-                  style={{
-                    backgroundImage: "url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800')",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center"
-                  }}
+          {/* Right Column - Product Image */}
+          <div className="relative">
+            {/* Main Dashboard Card */}
+            <div className="relative bg-[#243447] rounded-2xl overflow-hidden shadow-2xl shadow-black/40 border border-white/5">
+              {/* Restaurant Image Background */}
+              <div className="relative h-[200px] lg:h-[240px]">
+                <Image
+                  src="https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800"
+                  alt="Restaurant"
+                  fill
+                  className="object-cover"
                 />
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-6">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#243447]" />
+                
+                {/* Floating Badge */}
+                <div className="absolute top-4 left-4 bg-[#3EB489] text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-2">
+                  <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                  Live Dashboard
+                </div>
+              </div>
+
+              {/* Dashboard Content */}
+              <div className="p-6 -mt-8 relative z-10">
+                <div className="bg-[#1A2634] rounded-xl p-4 border border-white/10">
+                  <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-white/50 text-xs uppercase tracking-wider">Dashboard</p>
-                      <p className="text-white font-display font-bold text-xl">Today&apos;s Overview</p>
+                      <p className="text-white/50 text-xs uppercase tracking-wider">Today&apos;s Revenue</p>
+                      <p className="text-white font-display font-black text-3xl tracking-tight">£8,420</p>
                     </div>
-                    <div className="w-10 h-10 bg-[#3EB489]/20 rounded-full flex items-center justify-center">
-                      <BarChart3 className="w-5 h-5 text-[#3EB489]" />
+                    <div className="bg-[#3EB489]/20 text-[#3EB489] text-sm font-bold px-3 py-1 rounded-lg">
+                      +18%
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    {[
-                      { label: "Revenue", value: "£4,280", change: "+12%" },
-                      { label: "Orders", value: "156", change: "+8%" },
-                      { label: "Margin", value: "68%", change: "+5%" },
-                    ].map((stat) => (
-                      <div key={stat.label} className="bg-white/5 rounded-xl p-3">
-                        <p className="text-white/50 text-xs">{stat.label}</p>
-                        <p className="text-white font-display font-bold text-lg">{stat.value}</p>
-                        <p className="text-[#3EB489] text-xs font-semibold">{stat.change}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="bg-white/5 rounded-xl p-4 h-32 flex items-end gap-2">
-                    {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
+                  {/* Mini Chart */}
+                  <div className="flex items-end gap-1 h-16">
+                    {[35, 50, 40, 70, 55, 80, 65, 90, 75, 95, 85, 100].map((h, i) => (
                       <div
                         key={i}
-                        className="flex-1 bg-gradient-to-t from-[#3EB489] to-[#3EB489]/50 rounded-t"
-                        style={{ height: `${h}%` }}
+                        className="flex-1 bg-[#3EB489] rounded-sm"
+                        style={{ height: `${h}%`, opacity: 0.3 + (i * 0.05) }}
                       />
                     ))}
                   </div>
                 </div>
-              </div>
 
-              {/* Floating Cards - static */}
-              <div className="absolute -bottom-8 -left-8 glass-light rounded-xl p-4 shadow-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[#3EB489]/20 rounded-full flex items-center justify-center">
-                    <Check className="w-5 h-5 text-[#3EB489]" />
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm">Inventory Updated</p>
-                    <p className="text-white/50 text-xs">Auto-synced just now</p>
-                  </div>
+                {/* Stats Row */}
+                <div className="grid grid-cols-3 gap-3 mt-4">
+                  {[
+                    { label: "Orders", value: "247" },
+                    { label: "Margin", value: "72%" },
+                    { label: "Waste", value: "-34%" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="bg-white/5 rounded-lg p-3 text-center">
+                      <p className="text-white font-display font-bold text-lg">{stat.value}</p>
+                      <p className="text-white/40 text-xs">{stat.label}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
+            </div>
 
-              <div className="absolute -top-4 -right-4 glass-light rounded-xl p-4 shadow-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[#F59E0B]/20 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-[#F59E0B]" />
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm">AI Insight</p>
-                    <p className="text-white/50 text-xs">Reduce chicken order by 15%</p>
-                  </div>
+            {/* Floating Notification Card */}
+            <div className="absolute -bottom-4 -left-4 bg-[#1A2634] border border-white/10 rounded-xl p-4 shadow-xl max-w-[200px]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#3EB489]/20 rounded-full flex items-center justify-center shrink-0">
+                  <Check className="w-5 h-5 text-[#3EB489]" />
+                </div>
+                <div>
+                  <p className="text-white font-semibold text-sm">Stock synced</p>
+                  <p className="text-white/40 text-xs">Just now</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </section>
   );
 });
+
 
 // Problem Section
 const ProblemSection = memo(function ProblemSection() {
@@ -845,10 +836,9 @@ const HowItWorksSection = memo(function HowItWorksSection() {
         >
           <a
             href="#contact"
-            className="inline-flex items-center gap-2 bg-[#3EB489] hover:bg-[#2D8A69] text-white font-bold px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#3EB489]/30"
+            className="btn-3d inline-flex items-center gap-2 font-bold px-8 py-4 rounded-xl text-lg"
           >
-            <span>Get Started Now</span>
-            <ArrowRight className="w-5 h-5" />
+            <span>Get started now</span>
           </a>
         </motion.div>
       </div>
