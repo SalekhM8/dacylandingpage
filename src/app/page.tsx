@@ -117,12 +117,6 @@ const Navbar = memo(function Navbar() {
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-4">
               <a
-                href="#features"
-                className="text-white/70 hover:text-white font-medium text-sm transition-colors"
-              >
-                Watch demo
-              </a>
-              <a
                 href="#contact"
                 className="btn-3d inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg"
               >
@@ -230,7 +224,7 @@ const HeroSection = memo(function HeroSection() {
               Your restaurant&apos;s
               <br />
               unfair advantage.
-            </h1>
+          </h1>
 
             <p className="text-white/60 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
               Streamline operations. Boost margins. Cut waste. The AI-powered platform that puts you in complete control of your business.
@@ -245,11 +239,11 @@ const HeroSection = memo(function HeroSection() {
                 <span>Book a chat</span>
               </a>
               <a
-                href="#features"
+                href="#how-it-works"
                 className="btn-3d-outline inline-flex items-center justify-center gap-2 font-semibold px-8 py-4 rounded-xl text-lg"
               >
                 <Play className="w-5 h-5" />
-                <span>Watch demo</span>
+                <span>How it works</span>
               </a>
             </div>
           </div>
