@@ -212,9 +212,6 @@ const HeroSection = memo(function HeroSection() {
             <span className="text-[#3EB489] text-sm font-semibold">★</span>
             <span className="text-white/80 text-sm font-medium">Top AI Restaurant Platform</span>
           </div>
-          <div className="hidden sm:flex items-center gap-1 bg-[#3EB489]/10 border border-[#3EB489]/30 rounded-full px-3 py-2">
-            <span className="text-[#3EB489] font-bold text-sm">4.9</span>
-          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-start">
