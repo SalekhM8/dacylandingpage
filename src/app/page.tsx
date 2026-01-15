@@ -430,6 +430,8 @@ const SolutionSection = memo(function SolutionSection() {
     { name: "Recipes", icon: ChefHat },
     { name: "Analytics", icon: PieChart },
     { name: "Staff", icon: Users },
+    { name: "EHO/FSA Training", icon: ClipboardList },
+    { name: "Reviews", icon: Sparkles },
   ];
 
   return (
@@ -512,19 +514,19 @@ const SolutionSection = memo(function SolutionSection() {
                   </motion.div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-4 gap-3">
                   {platforms.map((item, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                      transition={{ duration: 0.4, delay: 0.5 + i * 0.08 }}
-                      className="bg-white/5 rounded-xl p-4 text-center hover:bg-white/10 transition-colors"
+                      transition={{ duration: 0.4, delay: 0.5 + i * 0.06 }}
+                      className="bg-white/5 rounded-xl p-3 text-center hover:bg-white/10 transition-colors"
                     >
-                      <div className="w-12 h-12 bg-[#3EB489]/10 rounded-xl mx-auto mb-3 flex items-center justify-center">
-                        <item.icon className="w-6 h-6 text-[#3EB489]" />
+                      <div className="w-10 h-10 bg-[#3EB489]/10 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                        <item.icon className="w-5 h-5 text-[#3EB489]" />
                       </div>
-                      <p className="text-white/70 text-sm font-medium">{item.name}</p>
+                      <p className="text-white/70 text-xs font-medium">{item.name}</p>
                     </motion.div>
                   ))}
                 </div>
