@@ -1,194 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 :root {
-  /* Primary Brand Colors - from Dacy logo */
-  --navy-deep: #1A2634;
-  --navy-dark: #1E2A38;
-  --navy: #243447;
-  --ice: #E8EDEF;
-  --teal: #3EB489;
-  --teal-dark: #2D8A69;
-  
-  /* Supporting Colors */
-  --white: #FFFFFF;
-  --off-white: #F8FAFC;
-  
-  /* Text Colors */
-  --text-primary: #1E2A38;
-  --text-secondary: #64748B;
-  --text-muted: #94A3B8;
-  --text-inverse: #FFFFFF;
-  
-  /* Glass Effect */
-  --glass-bg: rgba(26, 38, 52, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  
-  --background: var(--navy-deep);
-  --foreground: var(--text-inverse);
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'DM Sans', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background: var(--navy-deep);
-  color: var(--text-inverse);
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-  /* Performance: hardware acceleration for smooth scrolling */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* Performance: use GPU acceleration for transforms */
-.transform-gpu {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
 }
 
-/* Liquid Glass Effect */
-.glass {
-  background: rgba(26, 38, 52, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-light {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Gradient Text */
-.gradient-text {
-  background: linear-gradient(135deg, var(--teal) 0%, #5DD3A8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--navy-deep);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--navy);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--teal);
-}
-
-/* Animation Classes */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(62, 180, 137, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(62, 180, 137, 0.5); }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Font Utilities */
-.font-display {
-  font-family: 'DM Sans', sans-serif;
-  letter-spacing: -0.04em;
-  font-weight: 800;
-}
-
-/* 3D Button Effect */
-.btn-3d {
-  background: linear-gradient(180deg, #4AC99A 0%, #3EB489 50%, #2D8A69 100%);
-  color: white;
-  border: none;
-  border-bottom: 4px solid #1F6B4F;
-  box-shadow: 
-    0 6px 20px rgba(62, 180, 137, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: translateY(0);
-  transition: all 0.1s ease;
-}
-
-.btn-3d:hover {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
-  box-shadow: 
-    0 4px 15px rgba(62, 180, 137, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.btn-3d:active {
-  transform: translateY(4px);
-  border-bottom-width: 0px;
-  box-shadow: 
-    0 2px 10px rgba(62, 180, 137, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.btn-3d-outline {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 4px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.1s ease;
-}
-
-.btn-3d-outline:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(2px);
-  border-bottom-width: 2px;
-}
-
-.font-body {
-  font-family: 'Inter', sans-serif;
-}
-
-/* Tracking for ALL CAPS */
-.tracking-wider-caps {
-  letter-spacing: 0.15em;
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
